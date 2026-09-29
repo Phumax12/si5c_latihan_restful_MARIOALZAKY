@@ -105,7 +105,7 @@ app.delete("/mahasiswa/:id", cekApiKey,(req, res, next) => {
   mahasiswa.splice(index, 1);
   res.status(204).send();
 });
-
+ 
 // Handler 404: rute yang tidak ada
 app.use((req, res) => {
   res.status(404).json({ message: `Rute ${req.method} ${req.originalUrl} tidak ditemukan` });
