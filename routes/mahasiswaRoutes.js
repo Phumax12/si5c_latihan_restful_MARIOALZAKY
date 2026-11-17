@@ -1,12 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const mahasiswaController = require('../controllers/mahasiswaController');
-const cekApiKey = require('../middlewares/cekApiKey');
+const c = require('../controllers/mahasiswaController');
+const verifyToken = require('../middlewares/verifytoken');
+const hanyaRole = require('../middlewares/hanyaRole');
 
-router.get('/', mahasiswaController.getAll);
-router.get('/:id', mahasiswaController.getById);
-router.post('/', cekApiKey, mahasiswaController.create);
-router.put('/:id', cekApiKey, mahasiswaController.update);
-router.delete('/:id', cekApiKey, mahasiswaController.remove);
+// Publik
+router.get('/', c.getAll);
+router.get('/:id', c.getById);
+
+// user dan admin
+router.post('/', verifyToken, hanyaRole('user', 'admin'), c.create);
+router.put('/:id', verifyToken, hanyaRole('user', 'admin'), c.update);
+
+// admin saja
+router.delete('/:id', verifyToken, hanyaRole('admin'), c.remove);
 
 module.exports = router;

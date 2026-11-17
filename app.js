@@ -10,7 +10,13 @@ const { notFoundHandler, errorHandler } = require('./middlewares/errorHandler');
 const mahasiswaRoutes = require('./routes/mahasiswaRoutes');
 const fakultasRoutes = require('./routes/fakultasRoutes');
 const prodiRoutes = require('./routes/prodiRoutes');
+const authRoutes = require('./routes/authRoutes');   // bersama require lainnya
+                         // sebelum app.use(notFoundHandler)
 
+if (!process.env.JWT_SECRET) {
+  console.error('JWT_SECRET belum diisi di .env');
+  process.exit(1);
+}
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -21,6 +27,11 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }));
 app.use(express.json());
+// Express 5: req.body bernilai undefined bila request tidak membawa body JSON
+app.use((req, res, next) => {
+  req.body ??= {};
+  next();
+});
 
 // ---------- Route dasar ----------
 app.get('/', (req, res) => {
@@ -31,7 +42,7 @@ app.get('/', (req, res) => {
 app.use('/mahasiswa', mahasiswaRoutes);
 app.use('/fakultas', fakultasRoutes);
 app.use('/prodi', prodiRoutes);
-
+app.use('/auth', authRoutes); 
 // ---------- Handler 404 dan error handler (paling bawah) ----------
 app.use(notFoundHandler);
 app.use(errorHandler);
